@@ -33,13 +33,24 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NUM_OUTS = 2;
 
+    private boolean computing;
+    private int next;
+
+    private static final int NOTHING = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initValues();
         initViews();
         initRenderscript();
+    }
+
+    private void initValues() {
+        computing = false;
+        next = NOTHING;
     }
 
     private void initViews() {
@@ -105,13 +116,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void compute(int adjust) {
-        ComputeThread computeThread = new ComputeThread();
-        ComputeInput input = new ComputeInput(MainActivity.this, whichBitmap, adjust);
-        computeThread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, input);
-        whichBitmap = (whichBitmap + 1)%NUM_OUTS;
+        if (computing) {
+            next = adjust;
+        } else {
+            computing = true;
+            ComputeThread computeThread = new ComputeThread();
+            ComputeInput input = new ComputeInput(MainActivity.this, whichBitmap, adjust);
+            computeThread.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, input);
+            whichBitmap = (whichBitmap + 1)%NUM_OUTS;
+        }
     }
 
     public void display(int whichBitmap) {
+        computing = false;
+        if (next != NOTHING) {
+            compute(next);
+            next = NOTHING;
+        }
         imageViewOut.setImageBitmap(bitmapsOut[whichBitmap]);
     }
 

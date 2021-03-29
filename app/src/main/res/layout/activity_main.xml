@@ -22,7 +22,7 @@
         android:id="@+id/seek_bar_adjust"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="3"
+        android:max="765"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
